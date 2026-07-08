@@ -77,8 +77,8 @@ const jsonLd = {
   description:
     "A virtual beginner-friendly 24-hour hackathon by IEEE NED Student Branch. Innovate, build, and commit to your first hackathon experience.",
   url: baseUrl,
-  startDate: "2025-04-01T09:00:00+05:00",
-  endDate: "2025-04-02T09:00:00+05:00",
+  startDate: "2026-07-15T09:00:00+05:00",
+  endDate: "2026-07-18T23:59:00+05:00",
   eventStatus: "https://schema.org/EventScheduled",
   eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
   location: {
