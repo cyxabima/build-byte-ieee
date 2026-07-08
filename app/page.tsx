@@ -239,7 +239,7 @@ export default function HomePage() {
 
       <footer className="border-t border-border/50 py-8">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>IEEE NED Student Branch &middot; BuildByte 2025</p>
+          <p>IEEE NED Student Branch &middot; BuildByte 2026</p>
         </div>
       </footer>
     </div>
