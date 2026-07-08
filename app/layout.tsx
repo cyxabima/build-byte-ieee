@@ -43,21 +43,12 @@ export const metadata: Metadata = {
     title: "BuildByte | 24h Hackathon by IEEE NED Student Branch",
     description:
       "A virtual 24-hour hackathon designed to turn beginners into confident first-time participants. Register your team today!",
-    images: [
-      {
-        url: "/opengraph-image",
-        width: 1200,
-        height: 630,
-        alt: "BuildByte - 24h Virtual Hackathon by IEEE NED Student Branch",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "BuildByte | 24h Hackathon by IEEE NED Student Branch",
     description:
       "A virtual 24-hour hackathon designed to turn beginners into confident first-time participants. Register your team today!",
-    images: ["/opengraph-image"],
     creator: "@ieee_ned",
   },
   icons: {
