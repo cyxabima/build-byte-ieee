@@ -31,12 +31,12 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   openGraph: {
     type: "website", locale: "en_US", url: baseUrl, siteName: "BuildByte",
-    title: "BuildByte | 24h Hackathon by IEEE NED Student Branch",
+    title: "BuildByte |  3-day webinar + 24h Hackathon by IEEE NED Student Branch",
     description: "A 3-day webinar bootcamp + 24-hour hackathon. From zero to shipped.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "BuildByte | 24h Hackathon by IEEE NED Student Branch",
+    title: "BuildByte | 3-day webinar + 24h Hackathon by IEEE NED Student Branch",
     description: "A 3-day webinar bootcamp + 24-hour hackathon. From zero to shipped.",
     creator: "@ieee_ned",
   },
