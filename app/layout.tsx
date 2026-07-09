@@ -15,7 +15,7 @@ const baseUrl = "https://buildbyte.vercel.app/"
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "BuildByte | 24h Hackathon by IEEE NED Student Branch",
+    default: "BuildByte | 3-day webinar + 24h Hackathon by IEEE NED Student Branch",
     template: "%s | BuildByte",
   },
   description:
