@@ -13,8 +13,7 @@ const deliverables = [
   "<b>GitHub repo</b> with your full codebase",
   "<b>Working prototype</b> — no video or demo required",
   "<b>Figma files</b> for your design work",
-  "<b>A real README</b> — this is your team's pitch",
-  "<b>24 hours</b> from kickoff, plus a grace window",
+  "<b>A real README</b> — this is your team's pitch"
 ]
 
 export function JudgingSection() {
