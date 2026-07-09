@@ -10,8 +10,8 @@ const participantSchema = z.object({
 
 export const registrationSchema = z.object({
   teamName: z.string().optional(),
-  teamSize: z.number().min(1).max(4),
-  participants: z.array(participantSchema).min(1).max(4),
+  teamSize: z.number().min(1).max(3),
+  participants: z.array(participantSchema).min(1).max(3),
 })
 
 export type RegistrationInput = z.input<typeof registrationSchema>

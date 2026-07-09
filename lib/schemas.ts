@@ -10,8 +10,8 @@ const participantSchema = new mongoose.Schema({
 
 const registrationSchema = new mongoose.Schema({
   teamName: { type: String, default: "" },
-  teamSize: { type: Number, required: true, min: 1, max: 4 },
-  participants: { type: [participantSchema], required: true, validate: [(v: unknown[]) => v.length >= 1 && v.length <= 4, "Team size must be 1-4"] },
+  teamSize: { type: Number, required: true, min: 1, max: 3 },
+  participants: { type: [participantSchema], required: true, validate: [(v: unknown[]) => v.length >= 1 && v.length <= 3, "Team size must be 1-3"] },
   registeredAt: { type: Date, default: Date.now },
 })
 

@@ -112,7 +112,7 @@ export default function RegisterPage() {
                 <div className="space-y-2">
                   <Label>Team Size</Label>
                   <div className="flex gap-2">
-                    {[1, 2, 3, 4].map((size) => (
+                    {[1, 2, 3].map((size) => (
                       <button
                         key={size}
                         type="button"
@@ -209,7 +209,7 @@ export default function RegisterPage() {
                   ))}
                 </div>
 
-                {teamSize < 4 && (
+                {teamSize < 3 && (
                   <Button
                     type="button"
                     variant="outline"
