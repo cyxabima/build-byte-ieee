@@ -3,7 +3,7 @@ import { TerminalBadge } from "@/components/terminal-badge"
 const lineup = [
   {
     badge: "D1", day: "15 July · Webinar", title: "Git & GitHub Fundamentals",
-    desc: "Version control, collaboration workflows, and open-source basics — the toolkit every team needs before day one.",
+    desc: "Version control, collaboration workflows, and open-source basics the toolkit every team needs before day one.",
   },
   {
     badge: "D2", day: "16 July · Webinar", title: "Choosing Your Tech Stack",
@@ -11,11 +11,11 @@ const lineup = [
   },
   {
     badge: "D3", day: "17 July · Webinar", title: "From Idea to MVP",
-    desc: "Ideation, feature planning, team roles — and how to scope something you can actually finish.",
+    desc: "Ideation, feature planning, team roles and how to scope something you can actually finish.",
   },
   {
     badge: "GO", day: "18 July · Hackathon", title: "The 24-Hour Build",
-    desc: "Everything from the last 3 days, put to use. Submit, get judged, get recognized — all in one day.",
+    desc: "Everything from the last 3 days, put to use. Submit, get judged, get recognized all in one day.",
     finale: true,
   },
 ]
@@ -43,7 +43,7 @@ export function LineupSection() {
         <div className="relative max-w-[920px] mx-auto">
           <div
             className="hidden md:block absolute top-[52px] left-[5%] right-[5%] h-[2px] z-0"
-            style={{ background: "repeating-linear-gradient(90deg, var(--elec) 0 8px, transparent 8px 14px)" }}
+            style={{ background: "linear-gradient(90deg, var(--elec), var(--magenta))" }}
           />
           <div className="grid md:grid-cols-4 gap-4 relative z-[1]">
             {lineup.map((item) => (

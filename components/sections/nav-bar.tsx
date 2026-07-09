@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 
 export function NavBar() {
   return (
@@ -7,7 +8,8 @@ export function NavBar() {
       style={{ background: "rgba(5,5,12,0.72)", backdropFilter: "blur(14px)", borderColor: "var(--line-soft)" }}
     >
       <div className="max-w-[1180px] mx-auto px-4 sm:px-8 flex items-center justify-between h-[72px]">
-        <div className="flex items-center gap-0.5 font-bold text-lg tracking-wide">
+        <div className="flex items-center gap-3 font-bold text-lg tracking-wide">
+          <Image src="/logo.jpg" alt="IEEE NED SB" width={36} height={36} className="rounded-sm" />
           Build<span style={{ color: "var(--cyan)" }}>Byte</span>
           <span
             className="inline-block w-[6px] h-[6px] ml-[6px]"
