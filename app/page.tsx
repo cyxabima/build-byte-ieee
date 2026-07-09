@@ -469,7 +469,7 @@ export default function HomePage() {
           </Link>
           <p
             className="mt-10 text-xs"
-            style={{ fontFamily: "var(--font-jetbrains)", color: "var(--ice-dimmer)" }}
+            style={{ fontFamily: "var(--font-jetbrains)", color: "var(--cyan)" }}
           >
             &gt; awaiting_registration.exe
             <span
