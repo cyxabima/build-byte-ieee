@@ -78,7 +78,7 @@ export default function RegisterPage() {
     setIsSubmitting(true)
     try {
       await registerTeam({ ...data, teamName: data.teamName ?? "" })
-      toast.success("Registration successful! Check your email for confirmation.")
+      toast.success("Registration successful! We will reach out to you soon.")
       form.reset()
       setTeamSize(1)
     } catch (e) {
@@ -132,8 +132,8 @@ export default function RegisterPage() {
                         type="button"
                         onClick={() => updateTeamSize(size)}
                         className={`flex-1 rounded-md border px-4 py-2 text-sm font-medium transition-colors ${teamSize === size
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-input bg-background hover:bg-accent"
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-input bg-background hover:bg-accent"
                           }`}
                       >
                         {size}
