@@ -10,7 +10,7 @@ export function PixelDivider({ flip, className }: { flip?: boolean; className?: 
           linear-gradient(90deg, transparent 0 6px, var(--cyan) 6px 18px, transparent 18px 24px)
         `,
         backgroundSize: "24px 7px, 24px 7px",
-        backgroundPosition: flip ? "12px 7px" : "0 0, 12px 7px",
+        backgroundPosition: "0 0, 12px 7px",
         backgroundRepeat: "repeat-x",
         backgroundAttachment: "scroll",
         imageRendering: "pixelated",

@@ -467,16 +467,6 @@ export default function HomePage() {
           >
             Register Your Team
           </Link>
-          <p
-            className="mt-10 text-xs"
-            style={{ fontFamily: "var(--font-jetbrains)", color: "var(--cyan)" }}
-          >
-            &gt; awaiting_registration.exe
-            <span
-              className="inline-block w-[3px] h-[7px] ml-0.5 align-middle"
-              style={{ background: "var(--cyan)", animation: "blink 1s steps(1) infinite" }}
-            />
-          </p>
         </div>
       </section>
 
