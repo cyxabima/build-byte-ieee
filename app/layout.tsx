@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: "%s | BuildByte",
   },
   description:
-    "A 3-day webinar bootcamp that turns beginners into confident first-time hackathon builders — then puts it to the test in one 24-hour build.",
+    "A 3-day webinar bootcamp that turns beginners into confident first-time hackathon builders then puts it to the test in one 24-hour build.",
   keywords: [
     "hackathon", "IEEE", "NED", "NEDUET", "BuildByte",
     "coding competition", "beginner hackathon", "virtual hackathon",
@@ -48,7 +48,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Event",
   name: "BuildByte - 24h Hackathon",
-  description: "A 3-day webinar bootcamp that turns beginners into confident first-time hackathon builders — then puts it to the test in one 24-hour build.",
+  description: "A 3-day webinar bootcamp that turns beginners into confident first-time hackathon builders then puts it to the test in one 24-hour build.",
   url: baseUrl,
   startDate: "2026-07-15T09:00:00+05:00",
   endDate: "2026-07-18T23:59:00+05:00",

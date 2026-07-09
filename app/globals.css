@@ -16,6 +16,8 @@
   --color-border: var(--line);
   --color-input: var(--line);
   --color-ring: var(--elec);
+  --color-popover: var(--panel);
+  --color-popover-foreground: var(--ice);
   --color-card: var(--panel);
   --color-card-foreground: var(--ice);
 

@@ -14,16 +14,30 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { registrationSchema, type RegistrationFormData } from "@/lib/validations"
 import { registerTeam } from "@/lib/actions"
 
-const DEPARTMENTS = [
-  "Computer Science",
-  "Software Engineering",
-  "Electrical Engineering",
-  "Mechanical Engineering",
-  "Civil Engineering",
-  "Industrial Engineering",
-  "Chemical Engineering",
-  "Other",
-]
+const DEPARTMENTS =
+  [
+    "Civil Engineering",
+    "Urban and Infrastructure Engineering",
+    "Petroleum Engineering",
+    "Earthquake Engineering",
+    "Environmental Engineering",
+    "Electrical Engineering",
+    "Electronic Engineering",
+    "Telecommunications Engineering",
+    "Computer and Information Systems Engineering",
+    "Bio-Medical Engineering",
+    "Computer Science & Information Technology",
+    "Software Engineering",
+    "Mechanical Engineering",
+    "Industrial and Manufacturing Engineering",
+    "Textile Engineering",
+    "Automotive and Marine Engineering",
+    "Chemical Engineering",
+    "Materials Engineering",
+    "Metallurgical Engineering",
+    "Polymer and Petrochemical Engineering",
+    "Food Engineering"
+  ]
 
 export default function RegisterPage() {
   const [teamSize, setTeamSize] = useState(1)
@@ -117,11 +131,10 @@ export default function RegisterPage() {
                         key={size}
                         type="button"
                         onClick={() => updateTeamSize(size)}
-                        className={`flex-1 rounded-md border px-4 py-2 text-sm font-medium transition-colors ${
-                          teamSize === size
+                        className={`flex-1 rounded-md border px-4 py-2 text-sm font-medium transition-colors ${teamSize === size
                             ? "border-primary bg-primary text-primary-foreground"
                             : "border-input bg-background hover:bg-accent"
-                        }`}
+                          }`}
                       >
                         {size}
                       </button>
