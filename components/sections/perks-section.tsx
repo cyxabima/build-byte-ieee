@@ -18,7 +18,7 @@ export function PerksSection() {
           <TerminalBadge label="perks.exe" />
           <h2 className="text-[34px] font-bold mt-4 mb-3 text-white">Why join BuildByte?</h2>
           <p className="text-[15.5px]" style={{ color: "var(--ice-dim)" }}>
-            Everything you need to show up, learn fast, and ship something real.
+            Here&apos;s all you can expect and will need to show up, learn fast, and ship something real.
           </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-14">

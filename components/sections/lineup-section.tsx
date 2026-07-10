@@ -37,7 +37,7 @@ export function LineupSection() {
           style={{ fontFamily: "var(--font-jetbrains)", color: "var(--ice-dimmer)" }}
         >
           Bootcamp <span style={{ color: "var(--cyan)" }}>15–17 July</span> &nbsp;·&nbsp; Hackathon{" "}
-          <span style={{ color: "var(--cyan)" }}>18 July</span> &nbsp;·&nbsp; 1 hr max per webinar
+          <span style={{ color: "var(--cyan)" }}>18 July</span> &nbsp;·&nbsp; Duration:   <span style={{ color: "var(--cyan)" }}>1 hr per webinar</span>
         </p>
 
         <div className="relative max-w-[920px] mx-auto">

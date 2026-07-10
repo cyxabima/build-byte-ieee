@@ -15,11 +15,11 @@ export function StorySection() {
             common — one revealed at a time, one per session.
           </p>
         </div>
-
+        {/* Note: I have change it text of the card to Hint   */}
         <div className="grid sm:grid-cols-3 gap-7 max-w-[900px] mx-auto mb-10">
-          <PolaroidCard person="Person 01" revealAt="Webinar 1" style={{ transform: "rotate(-4deg)" }} />
-          <PolaroidCard person="Person 02" revealAt="Webinar 2" style={{ transform: "rotate(2deg)" }} />
-          <PolaroidCard person="Person 03" revealAt="Webinar 3" style={{ transform: "rotate(-2deg)" }} />
+          <PolaroidCard person="Hint 01" revealAt="Webinar 1" style={{ transform: "rotate(-4deg)" }} />
+          <PolaroidCard person="Hint 02" revealAt="Webinar 2" style={{ transform: "rotate(2deg)" }} />
+          <PolaroidCard person="Hint 03" revealAt="Webinar 3" style={{ transform: "rotate(-2deg)" }} />
         </div>
 
         <p

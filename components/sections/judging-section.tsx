@@ -19,18 +19,19 @@ const deliverables = [
 export function JudgingSection() {
   return (
     <section id="judging" style={{ background: "var(--void-2)", padding: "90px 0" }}>
+
+      <div className="text-center">
+        <TerminalBadge label="how_youre_scored.exe" />
+        <h2 className="text-[30px] font-bold mt-[18px] mb-6 text-white">Judging criteria</h2>
+      </div>
+
       <div className="max-w-[1180px] mx-auto px-4 sm:px-8 grid md:grid-cols-[0.9fr_1.1fr] gap-14 items-stretch">
-        <div>
-          <div className="text-center">
-            <TerminalBadge label="how_youre_scored.exe" />
-            <h2 className="text-[30px] font-bold mt-[18px] mb-6 text-white">Judging criteria</h2>
-          </div>
-          <div className="flex flex-col gap-[18px]">
-            {criteria.map((c) => (
-              <JudgingBar key={c.label} label={c.label} percentage={c.pct} />
-            ))}
-          </div>
+        <div className="flex flex-col gap-[18px]">
+          {criteria.map((c) => (
+            <JudgingBar key={c.label} label={c.label} percentage={c.pct} />
+          ))}
         </div>
+
         <div
           className="rounded-[6px] p-[30px]"
           style={{ background: "var(--panel)", border: "1px solid var(--line)" }}
@@ -39,7 +40,7 @@ export function JudgingSection() {
             className="text-[11px] uppercase tracking-wider mb-4"
             style={{ fontFamily: "var(--font-jetbrains)", color: "var(--cyan)" }}
           >
-            What to submit
+            What WE EXPECT?
           </h4>
           <ul className="list-none space-y-0">
             {deliverables.map((d) => (
