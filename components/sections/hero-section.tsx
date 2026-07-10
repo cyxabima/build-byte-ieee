@@ -76,7 +76,7 @@ export function HeroSection() {
         </p>
 
         <p className="mb-[34px] tracking-wide text-sm" style={{ fontFamily: "var(--font-jetbrains)", color: "var(--elec)" }}>
-          15–18 JULY · <b style={{ color: "var(--cyan)", fontWeight: 600 }}>3 WEBINARS + 1 HACKATHON</b> · ZERO TO SHIPPED
+          15–18 JULY · <b style={{ color: "var(--cyan)", fontWeight: 600 }}>3 WEBINARS + 1 HACKATHON</b>
         </p>
 
         <div className="flex gap-3.5 justify-center mb-14 flex-wrap">

@@ -38,6 +38,7 @@ export async function getRegistrations(): Promise<{
   participants: { name: string; email: string; department: string; rollNumber: string; phone: string }[]
   repoUrl: string
   registeredAt: string
+  submittedAt: string | null
 }[]> {
   await connectDB()
   const registrations = await Registration.find().sort({ registeredAt: -1 }).lean()
@@ -50,6 +51,7 @@ export async function getRegistrations(): Promise<{
     }),
     repoUrl: (reg.repoUrl as string) ?? "",
     registeredAt: reg.registeredAt instanceof Date ? reg.registeredAt.toISOString() : String(reg.registeredAt),
+    submittedAt: reg.submittedAt instanceof Date ? reg.submittedAt.toISOString() : null,
   }))
 }
 
@@ -72,7 +74,7 @@ export async function submitRepo(email: string, repoUrl: string) {
   await connectDB()
   await Registration.findOneAndUpdate(
     { "participants.email": email },
-    { $set: { repoUrl } },
+    { $set: { repoUrl, submittedAt: new Date() } },
   )
   revalidatePath("/admin")
   return { success: true }

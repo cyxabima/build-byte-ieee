@@ -20,6 +20,7 @@ type Registration = {
   }[]
   repoUrl: string
   registeredAt: string
+  submittedAt: string | null
 }
 
 export function Dashboard({ registrations }: { registrations: Registration[] }) {
@@ -181,6 +182,7 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
                       <TableHead>Team</TableHead>
                       <TableHead>Members</TableHead>
                       <TableHead>Repo</TableHead>
+                      <TableHead>Submitted</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -206,6 +208,15 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
                           >
                             Open Repo <GitBranch className="h-3 w-3" />
                           </a>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {reg.submittedAt ? new Date(reg.submittedAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }) : "—"}
                         </TableCell>
                       </TableRow>
                     ))}
