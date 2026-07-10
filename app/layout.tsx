@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website", locale: "en_US", url: baseUrl, siteName: "BuildByte",
     title: "BuildByte |  3-day webinar + 24h Hackathon by IEEE NED Student Branch",
-    description: "A 3-day webinar bootcamp + 24-hour hackathon. From zero to shipped.",
+    description: "A 3-day webinar bootcamp + 24-hour hackathon. ",
   },
   twitter: {
     card: "summary_large_image",

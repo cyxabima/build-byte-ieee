@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { registrationSchema, type RegistrationFormData } from "@/lib/validations"
-import { registerTeam } from "@/lib/actions"
+import { registerTeam, checkExistingEmails } from "@/lib/actions"
 
 const DEPARTMENTS =
   [
@@ -77,6 +77,20 @@ export default function RegisterPage() {
   async function onSubmit(data: RegistrationFormData) {
     setIsSubmitting(true)
     try {
+      const emails = data.participants.map((p) => p.email)
+      const existing = await checkExistingEmails(emails)
+      if (existing.length > 0) {
+        const existingSet = new Set(existing)
+        for (let i = 0; i < data.participants.length; i++) {
+          if (existingSet.has(data.participants[i].email)) {
+            form.setError(`participants.${i}.email`, {
+              message: "This email is already registered",
+            })
+          }
+        }
+        toast.error("One or more emails are already registered.")
+        return
+      }
       await registerTeam({ ...data, teamName: data.teamName ?? "" })
       toast.success("Registration successful! We will reach out to you soon.")
       form.reset()

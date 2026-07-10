@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
 import { connectDB } from "./db"
 import { Registration } from "./schemas"
 
@@ -35,6 +36,7 @@ export async function getRegistrations(): Promise<{
   teamName: string
   teamSize: number
   participants: { name: string; email: string; department: string; rollNumber: string; phone: string }[]
+  repoUrl: string
   registeredAt: string
 }[]> {
   await connectDB()
@@ -43,11 +45,48 @@ export async function getRegistrations(): Promise<{
     _id: String(reg._id),
     teamName: (reg.teamName as string) ?? "",
     teamSize: reg.teamSize as number,
-    participants: (reg.participants as Array<Record<string, unknown>>).map((p) => {
+    participants: (reg.participants as unknown as Array<Record<string, unknown>>).map((p) => {
       return { name: p.name as string, email: p.email as string, department: p.department as string, rollNumber: p.rollNumber as string, phone: p.phone as string }
     }),
+    repoUrl: (reg.repoUrl as string) ?? "",
     registeredAt: reg.registeredAt instanceof Date ? reg.registeredAt.toISOString() : String(reg.registeredAt),
   }))
+}
+
+export async function lookupTeamByEmail(email: string) {
+  await connectDB()
+  const reg = await Registration.findOne({ "participants.email": email }).lean()
+  if (!reg) return null
+  return {
+    _id: String(reg._id),
+    teamName: (reg.teamName as string) ?? "",
+    participants: (reg.participants as unknown as Array<Record<string, unknown>>).map((p) => ({
+      name: p.name as string,
+      email: p.email as string,
+    })),
+    repoUrl: (reg.repoUrl as string) ?? "",
+  }
+}
+
+export async function submitRepo(email: string, repoUrl: string) {
+  await connectDB()
+  await Registration.findOneAndUpdate(
+    { "participants.email": email },
+    { $set: { repoUrl } },
+  )
+  revalidatePath("/admin")
+  return { success: true }
+}
+
+export async function checkExistingEmails(emails: string[]) {
+  await connectDB()
+  const existing = await Registration.find(
+    { "participants.email": { $in: emails } },
+    { "participants.email": 1 },
+  ).lean()
+  return existing.flatMap((r: Record<string, unknown>) =>
+    (r.participants as unknown as Array<Record<string, unknown>>).map((p) => p.email as string),
+  )
 }
 
 export async function registerTeam(data: {

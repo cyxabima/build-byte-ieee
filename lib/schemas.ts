@@ -12,7 +12,9 @@ const registrationSchema = new mongoose.Schema({
   teamName: { type: String, default: "" },
   teamSize: { type: Number, required: true, min: 1, max: 3 },
   participants: { type: [participantSchema], required: true, validate: [(v: unknown[]) => v.length >= 1 && v.length <= 3, "Team size must be 1-3"] },
+  repoUrl: { type: String, default: "" },
   registeredAt: { type: Date, default: Date.now },
 })
 
-export const Registration = mongoose.models.Registration ?? mongoose.model("Registration", registrationSchema)
+delete mongoose.models.Registration
+export const Registration = mongoose.model("Registration", registrationSchema)
