@@ -15,28 +15,36 @@ import { registrationSchema, type RegistrationFormData } from "@/lib/validations
 import { registerTeam, checkExistingEmails } from "@/lib/actions"
 
 const DEPARTMENTS =
-  [
-    "Civil Engineering",
+  ["Civil Engineering",
     "Urban and Infrastructure Engineering",
     "Petroleum Engineering",
-    "Earthquake Engineering",
+    "Architecture and Planning",
     "Environmental Engineering",
+    "Earthquake Engineering",
+    "Mechanical Engineering",
+    "Textile Engineering",
+    "Industrial and Manufacturing Engineering",
+    "Automotive and Marine Engineering",
     "Electrical Engineering",
+    "Computer and Information Systems Engineering",
     "Electronic Engineering",
     "Telecommunications Engineering",
-    "Computer and Information Systems Engineering",
-    "Bio-Medical Engineering",
-    "Computer Science & Information Technology",
-    "Software Engineering",
-    "Mechanical Engineering",
-    "Industrial and Manufacturing Engineering",
-    "Textile Engineering",
-    "Automotive and Marine Engineering",
     "Chemical Engineering",
     "Materials Engineering",
     "Metallurgical Engineering",
     "Polymer and Petrochemical Engineering",
-    "Food Engineering"
+    "Biomedical Engineering",
+    "Food Engineering",
+    "Computer Science and Information Technology",
+    "Software Engineering",
+    "Mathematics",
+    "Chemistry",
+    "Physics",
+    "English Linguistics and Allied Studies",
+    "Economics and Management Sciences",
+    "Essential Studies",
+    "Civil Engineering [TIEST]",
+    "Computer Science and Technology [TIEST]"
   ]
 
 export default function RegisterPage() {
