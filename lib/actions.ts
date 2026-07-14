@@ -125,3 +125,23 @@ export async function registerTeam(data: {
   }
   return { success: true, id: String(record._id) }
 }
+
+export async function exportParticipantsCsv(): Promise<string> {
+  await connectDB()
+  const registrations = await Registration.find().lean()
+
+  const rows = [["Name", "Phone", "Email", "Team Name"]]
+
+  for (const reg of registrations) {
+    const teamName = (reg.teamName as string) ?? ""
+    const participants = reg.participants as unknown as Array<Record<string, unknown>>
+    for (const p of participants) {
+      const name = String(p.name ?? "")
+      const phone = String(p.phone ?? "")
+      const email = String(p.email ?? "")
+      rows.push([name, phone, email, teamName])
+    }
+  }
+
+  return rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(",")).join("\n")
+}

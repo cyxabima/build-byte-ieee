@@ -5,7 +5,7 @@ import { Search, LogOut, Users, GitBranch } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { logoutAdmin } from "@/lib/actions"
+import { logoutAdmin, exportParticipantsCsv } from "@/lib/actions"
 
 type Registration = {
   _id: string
@@ -50,11 +50,29 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
             <Users className="h-5 w-5 text-primary" />
             <span className="font-semibold">Admin Dashboard</span>
           </div>
-          <form action={logoutAdmin}>
-            <Button variant="ghost" type="submit" className="gap-2">
-              <LogOut className="h-4 w-4" /> Logout
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              className="gap-2 text-sm"
+              onClick={async () => {
+                const csv = await exportParticipantsCsv()
+                const blob = new Blob([csv], { type: "text/csv" })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement("a")
+                a.href = url
+                a.download = "participants.csv"
+                a.click()
+                URL.revokeObjectURL(url)
+              }}
+            >
+              Import Participants Sheet
             </Button>
-          </form>
+            <form action={logoutAdmin}>
+              <Button variant="ghost" type="submit" className="gap-2">
+                <LogOut className="h-4 w-4" /> Logout
+              </Button>
+            </form>
+          </div>
         </div>
       </header>
 
