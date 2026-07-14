@@ -36,8 +36,9 @@ export default function RegistrationClosedPage() {
           >
             <p className="text-muted-foreground">
               Questions? Contact{" "}
-              <a href="mailto:ieee@neduet.edu.pk" className="text-primary hover:underline" style={{ color: "var(--cyan)" }}>
-                ieee@neduet.edu.pk
+              Need help? Contact us at{" "}
+              <a href="mailto:ieeesb26@gmail.com" className="text-primary hover:underline" style={{ color: "var(--cyan)" }}>
+                ieeesb26@gmail.com
               </a>
             </p>
           </div>

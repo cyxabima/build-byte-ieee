@@ -36,8 +36,8 @@ export default function SubmissionsClosedPage() {
           >
             <p className="text-muted-foreground">
               Need help? Contact us at{" "}
-              <a href="mailto:ieee@neduet.edu.pk" className="text-primary hover:underline" style={{ color: "var(--cyan)" }}>
-                ieee@neduet.edu.pk
+              <a href="mailto:ieeesb26@gmail.com" className="text-primary hover:underline" style={{ color: "var(--cyan)" }}>
+                ieeesb26@gmail.com
               </a>
             </p>
           </div>
