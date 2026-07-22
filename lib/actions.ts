@@ -39,7 +39,7 @@ export async function getRegistrations(): Promise<{
   repoUrl: string
   registeredAt: string
   submittedAt: string | null
-  judgments: { judge: string; verdict: string }[]
+  judgments: { judge: string; innovation: number | null; technical: number | null; impact: number | null; challenge: number | null }[]
 }[]> {
   await connectDB()
   const registrations = await Registration.find().sort({ registeredAt: -1 }).lean()
@@ -55,7 +55,10 @@ export async function getRegistrations(): Promise<{
     submittedAt: reg.submittedAt instanceof Date ? reg.submittedAt.toISOString() : null,
     judgments: ((reg.judgments as unknown as Array<Record<string, unknown>>) ?? []).map((j) => ({
       judge: String(j.judge ?? ""),
-      verdict: String(j.verdict ?? ""),
+      innovation: j.innovation != null ? Number(j.innovation) : null,
+      technical: j.technical != null ? Number(j.technical) : null,
+      impact: j.impact != null ? Number(j.impact) : null,
+      challenge: j.challenge != null ? Number(j.challenge) : null,
     })),
   }))
 }
@@ -85,16 +88,29 @@ export async function submitRepo(email: string, repoUrl: string) {
   return { success: true }
 }
 
-export async function judgeTeam(id: string, judge: string, verdict: "great" | "okay" | "rejected") {
+export async function judgeTeam(
+  id: string,
+  judge: string,
+  scores: { innovation?: number | null; technical?: number | null; impact?: number | null; challenge?: number | null },
+) {
   await connectDB()
   const reg = await Registration.findById(id)
   if (!reg) return { error: "Team not found" }
 
-  const existing = (reg.judgments as Array<{ judge: string; verdict: string }>).find((j) => j.judge === judge)
+  const existing = (reg.judgments as unknown as Array<Record<string, unknown>>).find((j) => j.judge === judge)
   if (existing) {
-    existing.verdict = verdict
+    if (scores.innovation !== undefined) existing.innovation = scores.innovation
+    if (scores.technical !== undefined) existing.technical = scores.technical
+    if (scores.impact !== undefined) existing.impact = scores.impact
+    if (scores.challenge !== undefined) existing.challenge = scores.challenge
   } else if ((reg.judgments as unknown as unknown[]).length < 3) {
-    ;(reg.judgments as unknown as Array<{ judge: string; verdict: string }>).push({ judge, verdict })
+    ;(reg.judgments as unknown as Array<Record<string, unknown>>).push({
+      judge,
+      innovation: scores.innovation ?? null,
+      technical: scores.technical ?? null,
+      impact: scores.impact ?? null,
+      challenge: scores.challenge ?? null,
+    })
   } else {
     return { error: "Team already has 3 judgments" }
   }

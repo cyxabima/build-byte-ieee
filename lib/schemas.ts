@@ -17,7 +17,10 @@ const registrationSchema = new mongoose.Schema({
   judgments: {
     type: [{
       judge: { type: String, required: true },
-      verdict: { type: String, enum: ["great", "okay", "rejected"], required: true },
+      innovation: { type: Number, min: 1, max: 5, default: null },
+      technical: { type: Number, min: 1, max: 5, default: null },
+      impact: { type: Number, min: 1, max: 5, default: null },
+      challenge: { type: Number, min: 1, max: 5, default: null },
     }],
     default: [],
     validate: [(v: unknown[]) => (v as unknown[]).length <= 3, "Maximum 3 judgments per team"],

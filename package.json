@@ -10,6 +10,7 @@
     "fix-phone-numbers": "tsx --env-file=.env.local scripts/fix-phone-numbers.ts"
   },
   "dependencies": {
+    "@base-ui/react": "^1.6.0",
     "@hookform/resolvers": "^5.4.0",
     "@radix-ui/react-dialog": "^1.1.19",
     "@radix-ui/react-label": "^2.1.11",

@@ -6,44 +6,78 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { logoutAdmin, exportParticipantsCsv, judgeTeam, removeJudgeFromTeam } from "@/lib/actions"
 
 const JUDGES = ["Ukasha", "Zerwa", "Anas", "Noor", "Zainab", "Arooj"]
 
-const VERDICT_COLORS: Record<string, string> = {
-  great: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-  okay: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  rejected: "bg-red-500/20 text-red-400 border-red-500/30",
-}
+const CRITERIA = [
+  { key: "innovation", label: "Innovation / Creativity", weight: 35 },
+  { key: "technical", label: "Technical Execution", weight: 30 },
+  { key: "impact", label: "Impact / Practicality", weight: 20 },
+  { key: "challenge", label: "Challenge Alignment", weight: 15 },
+] as const
 
-type Judgment = { judge: string; verdict: string }
+type Judgment = {
+  judge: string
+  innovation: number | null
+  technical: number | null
+  impact: number | null
+  challenge: number | null
+}
 
 type Registration = {
   _id: string
   teamName: string
   teamSize: number
-  participants: {
-    name: string
-    email: string
-    department: string
-    rollNumber: string
-    phone: string
-  }[]
+  participants: { name: string; email: string; department: string; rollNumber: string; phone: string }[]
   repoUrl: string
   registeredAt: string
   submittedAt: string | null
   judgments: Judgment[]
 }
 
-type JudgmentFilter = "all" | "great" | "okay" | "rejected" | "unjudged"
+type ScoreFilter = "all" | "judged" | "unjudged" | "high" | "mid" | "low"
+
+function calcJudgeScore(j: Judgment): number | null {
+  const scored = CRITERIA.filter((c) => j[c.key] != null)
+  if (scored.length === 0) return null
+  const weightedSum = scored.reduce((sum, c) => sum + (j[c.key] as number) * c.weight, 0)
+  const totalWeight = scored.reduce((sum, c) => sum + c.weight, 0)
+  return Math.round((weightedSum / (totalWeight * 5)) * 100)
+}
+
+function calcTeamScore(judgments: Judgment[]): number | null {
+  const scores = judgments.map(calcJudgeScore).filter((s): s is number => s != null)
+  if (scores.length === 0) return null
+  return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+}
+
+function scoreBadgeClass(score: number | null): string {
+  if (score == null) return "bg-muted text-muted-foreground border-muted-foreground/30"
+  if (score >= 75) return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+  if (score >= 50) return "bg-amber-500/20 text-amber-400 border-amber-500/30"
+  return "bg-red-500/20 text-red-400 border-red-500/30"
+}
+
+function clampScore(v: string): string {
+  if (v === "") return ""
+  const n = Math.floor(Number(v))
+  if (isNaN(n)) return ""
+  if (n < 1) return "1"
+  if (n > 5) return "5"
+  return String(n)
+}
 
 export function Dashboard({ registrations }: { registrations: Registration[] }) {
   const [tab, setTab] = useState<"registrations" | "submissions">("registrations")
   const [query, setQuery] = useState("")
-  const [judgmentFilter, setJudgmentFilter] = useState<JudgmentFilter>("all")
+  const [scoreFilter, setScoreFilter] = useState<ScoreFilter>("all")
   const [addingFor, setAddingFor] = useState<string | null>(null)
   const [newJudge, setNewJudge] = useState("")
-  const [newVerdict, setNewVerdict] = useState<"great" | "okay" | "rejected">("great")
+  const [scores, setScores] = useState<{ innovation: string; technical: string; impact: string; challenge: string }>({
+    innovation: "", technical: "", impact: "", challenge: "",
+  })
 
   const submissions = registrations.filter((r) => r.repoUrl)
 
@@ -52,10 +86,7 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
     const q = query.toLowerCase()
     const matchesTeam = reg.teamName?.toLowerCase().includes(q)
     const matchesParticipant = reg.participants.some(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.department.toLowerCase().includes(q) ||
-        p.email.toLowerCase().includes(q),
+      (p) => p.name.toLowerCase().includes(q) || p.department.toLowerCase().includes(q) || p.email.toLowerCase().includes(q),
     )
     return matchesTeam || matchesParticipant
   })
@@ -65,43 +96,61 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
     const q = query.toLowerCase()
     const matchesTeam = reg.teamName?.toLowerCase().includes(q)
     const matchesParticipant = reg.participants.some(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.department.toLowerCase().includes(q) ||
-        p.email.toLowerCase().includes(q),
+      (p) => p.name.toLowerCase().includes(q) || p.department.toLowerCase().includes(q) || p.email.toLowerCase().includes(q),
     )
     return matchesTeam || matchesParticipant
   })
 
   const judgedSubmissions = filteredSubmissions.filter((reg) => {
-    if (judgmentFilter === "all") return true
-    if (judgmentFilter === "unjudged") return reg.judgments.length === 0
-    return reg.judgments.some((j) => j.verdict === judgmentFilter)
+    if (scoreFilter === "all") return true
+    if (scoreFilter === "unjudged") return reg.judgments.length === 0
+    if (scoreFilter === "judged") return reg.judgments.length > 0
+    const avg = calcTeamScore(reg.judgments)
+    if (avg == null) return false
+    if (scoreFilter === "high") return avg >= 75
+    if (scoreFilter === "mid") return avg >= 50 && avg < 75
+    if (scoreFilter === "low") return avg < 50
+    return true
   })
 
-  const getJudgmentCounts = () => {
-    const counts: Record<JudgmentFilter, number> = { all: 0, great: 0, okay: 0, rejected: 0, unjudged: 0 }
-    for (const reg of filteredSubmissions) {
-      counts.all++
-      if (reg.judgments.length === 0) {
-        counts.unjudged++
-      } else {
-        for (const j of reg.judgments) {
-          if (j.verdict in counts) counts[j.verdict as JudgmentFilter]++
-        }
-      }
+  const counts = { all: filteredSubmissions.length, judged: 0, unjudged: 0, high: 0, mid: 0, low: 0 }
+  for (const reg of filteredSubmissions) {
+    if (reg.judgments.length === 0) counts.unjudged++
+    else counts.judged++
+    const avg = calcTeamScore(reg.judgments)
+    if (avg != null) {
+      if (avg >= 75) counts.high++
+      else if (avg >= 50) counts.mid++
+      else counts.low++
     }
-    return counts
   }
 
-  const counts = getJudgmentCounts()
+  function livePreviewScore(): number | null {
+    const scored = CRITERIA.filter((c) => scores[c.key] !== "" && scores[c.key] !== "0")
+    if (scored.length === 0) return null
+    const weightedSum = scored.reduce((sum, c) => sum + Number(scores[c.key]) * c.weight, 0)
+    const totalWeight = scored.reduce((sum, c) => sum + c.weight, 0)
+  return Math.round((weightedSum / (totalWeight * 5)) * 100)
+  }
+
+  function resetForm() {
+    setAddingFor(null)
+    setNewJudge("")
+    setScores({ innovation: "", technical: "", impact: "", challenge: "" })
+  }
+
+  function updateScore(key: "innovation" | "technical" | "impact" | "challenge", raw: string) {
+    setScores({ ...scores, [key]: clampScore(raw) })
+  }
 
   async function handleAddJudge(regId: string) {
     if (!newJudge) return
-    await judgeTeam(regId, newJudge, newVerdict)
-    setAddingFor(null)
-    setNewJudge("")
-    setNewVerdict("great")
+    const payload: { innovation?: number | null; technical?: number | null; impact?: number | null; challenge?: number | null } = {}
+    for (const c of CRITERIA) {
+      payload[c.key] = scores[c.key] !== "" && scores[c.key] !== "0" ? Number(scores[c.key]) : null
+    }
+    await judgeTeam(regId, newJudge, payload)
+    resetForm()
   }
 
   async function handleRemoveJudge(regId: string, judge: string) {
@@ -112,6 +161,9 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
     const used = new Set(reg.judgments.map((j) => j.judge))
     return JUDGES.filter((j) => !used.has(j))
   }
+
+  const addingTeam = addingFor ? registrations.find((r) => r._id === addingFor) : null
+  const availableForAdding = addingTeam ? getAvailableJudges(addingTeam) : JUDGES
 
   return (
     <div className="min-h-screen bg-background">
@@ -154,9 +206,7 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
             type="button"
             onClick={() => setTab("registrations")}
             className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-              tab === "registrations"
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground"
+              tab === "registrations" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Users className="h-4 w-4" />
@@ -167,9 +217,7 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
             type="button"
             onClick={() => setTab("submissions")}
             className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-              tab === "submissions"
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground"
+              tab === "submissions" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <GitBranch className="h-4 w-4" />
@@ -200,9 +248,7 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
 
             {filteredRegistrations.length === 0 ? (
               <div className="rounded-lg border p-12 text-center">
-                <p className="text-muted-foreground">
-                  {query ? "No teams match your search." : "No registrations yet."}
-                </p>
+                <p className="text-muted-foreground">{query ? "No teams match your search." : "No registrations yet."}</p>
               </div>
             ) : (
               <div className="rounded-lg border">
@@ -236,11 +282,7 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {new Date(reg.registeredAt).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
+                            month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit",
                           })}
                         </TableCell>
                       </TableRow>
@@ -272,20 +314,20 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
               </div>
             </div>
 
-            {/* Judgment filter pills */}
+            {/* Filter pills */}
             <div className="mb-6 flex flex-wrap gap-2">
-              {(["all", "great", "okay", "rejected", "unjudged"] as JudgmentFilter[]).map((f) => (
+              {(["all", "judged", "unjudged", "high", "mid", "low"] as ScoreFilter[]).map((f) => (
                 <button
                   key={f}
                   type="button"
-                  onClick={() => setJudgmentFilter(f)}
+                  onClick={() => setScoreFilter(f)}
                   className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                    judgmentFilter === f
-                      ? f === "great"
+                    scoreFilter === f
+                      ? f === "high"
                         ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40"
-                        : f === "okay"
+                        : f === "mid"
                           ? "bg-amber-500/20 text-amber-400 border-amber-500/40"
-                          : f === "rejected"
+                          : f === "low"
                             ? "bg-red-500/20 text-red-400 border-red-500/40"
                             : f === "unjudged"
                               ? "bg-muted text-muted-foreground border-muted-foreground/30"
@@ -302,7 +344,7 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
             {judgedSubmissions.length === 0 ? (
               <div className="rounded-lg border p-12 text-center">
                 <p className="text-muted-foreground">
-                  {query || judgmentFilter !== "all" ? "No teams match your filters." : "No submissions yet."}
+                  {query || scoreFilter !== "all" ? "No teams match your filters." : "No submissions yet."}
                 </p>
               </div>
             ) : (
@@ -321,6 +363,7 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
                   <TableBody>
                     {judgedSubmissions.map((reg, index) => {
                       const available = getAvailableJudges(reg)
+                      const teamAvg = calcTeamScore(reg.judgments)
                       return (
                         <TableRow key={reg._id}>
                           <TableCell className="text-muted-foreground">{index + 1}</TableCell>
@@ -346,64 +389,38 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
                             </a>
                           </TableCell>
                           <TableCell>
-                            <div className="flex flex-col gap-1.5">
-                              {reg.judgments.map((j) => (
-                                <div key={j.judge} className="flex items-center gap-1.5">
-                                  <span
-                                    className={`inline-flex items-center rounded border px-2 py-0.5 text-xs font-medium ${VERDICT_COLORS[j.verdict] ?? "bg-muted text-muted-foreground"}`}
-                                  >
-                                    {j.judge}: {j.verdict}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRemoveJudge(reg._id, j.judge)}
-                                    className="text-muted-foreground hover:text-destructive transition-colors"
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </button>
-                                </div>
-                              ))}
+                            <div className="flex flex-col gap-2">
+                              {reg.judgments.map((j) => {
+                                const score = calcJudgeScore(j)
+                                const scored = CRITERIA.filter((c) => j[c.key] != null)
+                                return (
+                                  <div key={j.judge} className="flex items-center gap-1.5">
+                                    <span className={`inline-flex items-center rounded border px-2 py-0.5 text-xs font-medium ${scoreBadgeClass(score)}`}>
+                                      {j.judge}: {score != null ? `${score}/100` : "\u2014"}
+                                    </span>
+                                    {scored.length > 0 && (
+                                      <span className="text-[10px] text-muted-foreground">
+                                        {scored.map((c) => `${c.label[0]}${j[c.key]}`).join(" ")}
+                                      </span>
+                                    )}
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemoveJudge(reg._id, j.judge)}
+                                      className="text-muted-foreground hover:text-destructive transition-colors"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                )
+                              })}
 
-                              {addingFor === reg._id ? (
-                                <div className="flex items-center gap-1.5 mt-1">
-                                  <Select value={newJudge} onValueChange={setNewJudge}>
-                                    <SelectTrigger className="h-7 w-28 text-xs">
-                                      <SelectValue placeholder="Judge" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {available.map((j) => (
-                                        <SelectItem key={j} value={j}>{j}</SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                  <Select value={newVerdict} onValueChange={(v) => setNewVerdict(v as "great" | "okay" | "rejected")}>
-                                    <SelectTrigger className="h-7 w-24 text-xs">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="great">Great</SelectItem>
-                                      <SelectItem value="okay">Okay</SelectItem>
-                                      <SelectItem value="rejected">Rejected</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="h-7 px-2"
-                                    onClick={() => handleAddJudge(reg._id)}
-                                    disabled={!newJudge}
-                                  >
-                                    Save
-                                  </Button>
-                                  <button
-                                    type="button"
-                                    onClick={() => { setAddingFor(null); setNewJudge(""); setNewVerdict("great") }}
-                                    className="text-muted-foreground hover:text-foreground"
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </button>
-                                </div>
-                              ) : reg.judgments.length < 3 && available.length > 0 ? (
+                              {teamAvg != null && reg.judgments.length > 1 && (
+                                <span className={`inline-flex items-center rounded border px-2 py-0.5 text-xs font-bold ${scoreBadgeClass(teamAvg)}`}>
+                                  AVG: {teamAvg}/100
+                                </span>
+                              )}
+
+                              {reg.judgments.length < 3 && available.length > 0 && (
                                 <button
                                   type="button"
                                   onClick={() => setAddingFor(reg._id)}
@@ -411,17 +428,13 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
                                 >
                                   <Plus className="h-3 w-3" /> Add Judge
                                 </button>
-                              ) : null}
+                              )}
                             </div>
                           </TableCell>
                           <TableCell className="text-sm text-muted-foreground">
                             {reg.submittedAt ? new Date(reg.submittedAt).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }) : "—"}
+                              month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit",
+                            }) : "\u2014"}
                           </TableCell>
                         </TableRow>
                       )
@@ -433,6 +446,64 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
           </>
         )}
       </div>
+
+      {/* Add Judge Dialog */}
+      <Dialog open={addingFor !== null} onOpenChange={(open: boolean) => { if (!open) resetForm() }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {addingTeam ? `Add Judge \u2014 ${addingTeam.teamName || "Solo"}` : "Add Judge"}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">Judge</label>
+              <Select value={newJudge} onValueChange={setNewJudge}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select judge" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableForAdding.map((j) => (
+                    <SelectItem key={j} value={j}>{j}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {CRITERIA.map((c) => (
+                <div key={c.key}>
+                  <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                    {c.label} <span className="opacity-60">({c.weight}%)</span>
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={5}
+                    step={1}
+                    value={scores[c.key]}
+                    onChange={(e) => updateScore(c.key, e.target.value)}
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    placeholder="1 to 5"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {newJudge && livePreviewScore() != null && (
+              <div className={`inline-flex items-center rounded border px-3 py-1 text-sm font-semibold ${scoreBadgeClass(livePreviewScore())}`}>
+                Weighted score: {livePreviewScore()}/100
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={resetForm}>Cancel</Button>
+            <Button disabled={!newJudge} onClick={() => addingFor && handleAddJudge(addingFor)}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
