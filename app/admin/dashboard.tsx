@@ -209,6 +209,7 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">S.No</TableHead>
                       <TableHead>Team</TableHead>
                       <TableHead>Size</TableHead>
                       <TableHead>Members</TableHead>
@@ -216,8 +217,9 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredRegistrations.map((reg) => (
+                    {filteredRegistrations.map((reg, index) => (
                       <TableRow key={reg._id}>
+                        <TableCell className="text-muted-foreground">{index + 1}</TableCell>
                         <TableCell className="font-medium">{reg.teamName || "Solo"}</TableCell>
                         <TableCell>{reg.teamSize}</TableCell>
                         <TableCell>
@@ -308,6 +310,7 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">S.No</TableHead>
                       <TableHead>Team</TableHead>
                       <TableHead>Members</TableHead>
                       <TableHead>Repo</TableHead>
@@ -316,10 +319,11 @@ export function Dashboard({ registrations }: { registrations: Registration[] }) 
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {judgedSubmissions.map((reg) => {
+                    {judgedSubmissions.map((reg, index) => {
                       const available = getAvailableJudges(reg)
                       return (
                         <TableRow key={reg._id}>
+                          <TableCell className="text-muted-foreground">{index + 1}</TableCell>
                           <TableCell className="font-medium">{reg.teamName || "Solo"}</TableCell>
                           <TableCell>
                             <ul className="space-y-1">
