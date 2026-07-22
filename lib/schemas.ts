@@ -14,6 +14,14 @@ const registrationSchema = new mongoose.Schema({
   participants: { type: [participantSchema], required: true, validate: [(v: unknown[]) => v.length >= 1 && v.length <= 3, "Team size must be 1-3"] },
   repoUrl: { type: String, default: "" },
   submittedAt: { type: Date, default: null },
+  judgments: {
+    type: [{
+      judge: { type: String, required: true },
+      verdict: { type: String, enum: ["great", "okay", "rejected"], required: true },
+    }],
+    default: [],
+    validate: [(v: unknown[]) => (v as unknown[]).length <= 3, "Maximum 3 judgments per team"],
+  },
   registeredAt: { type: Date, default: Date.now },
 }, { timestamps: true })
 

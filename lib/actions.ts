@@ -39,6 +39,7 @@ export async function getRegistrations(): Promise<{
   repoUrl: string
   registeredAt: string
   submittedAt: string | null
+  judgments: { judge: string; verdict: string }[]
 }[]> {
   await connectDB()
   const registrations = await Registration.find().sort({ registeredAt: -1 }).lean()
@@ -52,6 +53,10 @@ export async function getRegistrations(): Promise<{
     repoUrl: (reg.repoUrl as string) ?? "",
     registeredAt: reg.registeredAt instanceof Date ? reg.registeredAt.toISOString() : String(reg.registeredAt),
     submittedAt: reg.submittedAt instanceof Date ? reg.submittedAt.toISOString() : null,
+    judgments: ((reg.judgments as unknown as Array<Record<string, unknown>>) ?? []).map((j) => ({
+      judge: String(j.judge ?? ""),
+      verdict: String(j.verdict ?? ""),
+    })),
   }))
 }
 
@@ -75,6 +80,35 @@ export async function submitRepo(email: string, repoUrl: string) {
   await Registration.findOneAndUpdate(
     { "participants.email": email },
     { $set: { repoUrl, submittedAt: new Date() } },
+  )
+  revalidatePath("/admin")
+  return { success: true }
+}
+
+export async function judgeTeam(id: string, judge: string, verdict: "great" | "okay" | "rejected") {
+  await connectDB()
+  const reg = await Registration.findById(id)
+  if (!reg) return { error: "Team not found" }
+
+  const existing = (reg.judgments as Array<{ judge: string; verdict: string }>).find((j) => j.judge === judge)
+  if (existing) {
+    existing.verdict = verdict
+  } else if ((reg.judgments as unknown as unknown[]).length < 3) {
+    ;(reg.judgments as unknown as Array<{ judge: string; verdict: string }>).push({ judge, verdict })
+  } else {
+    return { error: "Team already has 3 judgments" }
+  }
+
+  await reg.save()
+  revalidatePath("/admin")
+  return { success: true }
+}
+
+export async function removeJudgeFromTeam(id: string, judge: string) {
+  await connectDB()
+  await Registration.findOneAndUpdate(
+    { _id: id },
+    { $pull: { judgments: { judge } } },
   )
   revalidatePath("/admin")
   return { success: true }
